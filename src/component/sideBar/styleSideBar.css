@@ -1,0 +1,96 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  box-sizing: border-box;
+  padding: 0;
+  font-family: "Poppinss", sans-serif;
+}
+
+.side-nav {
+  width: 250px;
+  height: calc(100% - 110px);
+  position: fixed;
+  top: 110px;
+  left: 0;
+  padding: 30px 15px;
+  background: rgba(125, 125, 125, 0.2);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+.profile-page-sidebar {
+  height: 100%;
+  top: 0;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  background: rgba(125, 125, 125, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+.user h2 {
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.user-img {
+  width: 40px;
+  border-radius: 50%;
+  margin: auto;
+}
+.verified-img {
+  width: 20px;
+  margin-left: 10px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0 15px;
+}
+.sidebar ul li {
+  margin: 30px 0;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 12px; /* Zaobljene ivice */
+  transition: all 0.3s ease-in-out;
+}
+
+.sidebar ul li:hover {
+  background: rgba(125, 125, 125, 0.3); /* Sivkasta nijansa pri hoveru */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Senka */
+  transform: scale(1.05); /* Blagi zoom efekat */
+}
+
+.sidebar ul li img {
+  width: 40px;
+  margin-right: 10px;
+  transition: filter 0.3s ease-in-out;
+}
+
+.sidebar ul li:hover img {
+  filter: brightness(80%);
+}
+
+.sidebar ul li:last-child {
+  margin-bottom: 0px;
+}
+
+.sidebar ul li p {
+  white-space: nowrap;
+}

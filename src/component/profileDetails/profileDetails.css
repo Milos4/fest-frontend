@@ -1,0 +1,209 @@
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+*/
+.profile-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  background: #fff;
+  margin-bottom: -120px;
+}
+
+.profile-card {
+  position: relative;
+  width: 350px;
+  height: 190px;
+  background: grey;
+  transition: 0.5s;
+  margin-bottom: -50px;
+}
+.profile-card:hover {
+  height: 300px;
+}
+
+.profile-card .profile-lines {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  overflow: hidden;
+}
+
+.profile-card .profile-lines::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 120px;
+  background: linear-gradient(
+    transparent,
+    #ffaf0d,
+    #d83460,
+    #0ebcfb,
+    transparent
+  );
+  animation: animate 4s linear infinite;
+}
+
+@keyframes animate {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.profile-card .profile-lines::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: #fff;
+}
+
+.profile-card .profile-imgBx {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 150px;
+  background: #fff;
+  transition: 0.5s;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.profile-card:hover .profile-imgBx {
+  width: 200px;
+  height: 200px;
+}
+
+.profile-card .profile-imgBx::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 500px;
+  height: 150px;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(
+    transparent,
+    #ffaf0d,
+    #d83460,
+    #0ebcfb,
+    transparent
+  );
+  animation: animate2 4s linear infinite;
+}
+
+@keyframes animate2 {
+  0% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+}
+
+.profile-card .profile-imgBx::after {
+  content: "";
+  inset: 3px;
+  position: absolute;
+  background: #fff;
+}
+
+.profile-card .profile-imgBx img {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  z-index: 1;
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  border-radius: 2px;
+}
+
+.profile-card .profile-content {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-self: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.profile-card .profile-content .profile-detials {
+  padding: 40px;
+  text-align: center;
+  width: 100%;
+  transition: 0.5s;
+  transform: translateY(110px);
+}
+
+.profile-card:hover .profile-content .profile-detials {
+  transform: translateY(70px);
+}
+
+.profile-card .profile-content .profile-detials .profile-h2 {
+  font-size: 1.25em;
+  font-weight: 600;
+  color: grey;
+  line-height: 1.2em;
+}
+
+.profile-card .profile-content .profile-detials .profile-h2 span {
+  font-size: 0.75em;
+  font-weight: 500;
+  color: #ffaf0d;
+}
+
+.profile-card .profile-content .profile-detials .profile-data {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+
+.profile-card .profile-content .profile-detials .profile-h3 {
+  font-size: 1em;
+  color: rgb(50, 50, 50);
+  line-height: 1.2em;
+  font-weight: 600;
+  flex-basis: 30%;
+}
+
+.profile-card .profile-content .profile-detials .profile-h3 span {
+  font-size: 0.9em;
+  color: rgb(50, 50, 50);
+  line-height: 1.2em;
+  font-weight: 500;
+}
+
+.profile-card .profile-content .profile-detials .profile-actionBtn {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.profile-card .profile-content .profile-detials .profile-actionBtn button {
+  padding: 10px 0;
+  width: 100px; /* Set a fixed width */
+
+  border: none;
+  outline: none;
+  border-radius: 5px;
+  font-size: 1em;
+  font-weight: 500;
+  background-color: rgb(150, 150, 150);
+  color: #fff;
+  cursor: pointer;
+}
+
+.hidden-space {
+  visibility: hidden;
+}

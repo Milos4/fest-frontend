@@ -1,0 +1,28 @@
+.settings-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 150px;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+}
+
+.settings-body {
+  margin-top: 20px;
+}
+
+.settings-option {
+  padding: 15px;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.settings-option:hover {
+  background-color: #f0f0f0;
+}

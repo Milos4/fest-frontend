@@ -1,0 +1,44 @@
+.notifications-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  margin-top: 150px;
+}
+
+.notifications-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 30px;
+  width: 600px;
+  text-align: left;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.notifications-header {
+  text-align: center;
+  font-size: 1.8em;
+  color: #0ebcfb;
+  margin-bottom: 20px;
+}
+
+.notifications-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.notifications-list li {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  font-size: 1.2em;
+}
+
+.notifications-list li.unread {
+  font-weight: bold;
+  color: #333;
+}
+
+.notifications-list li.read {
+  font-weight: normal;
+  color: #777;
+}

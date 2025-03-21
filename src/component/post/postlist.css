@@ -1,0 +1,183 @@
+/* * {
+  padding: 0%;
+  margin: 0%;
+} */
+.all-posts-container {
+  height: auto;
+  margin-top: 75px;
+  padding: 10px;
+  margin-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Razmak između postova */
+}
+
+.container-post {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  margin-bottom: 0; /* Ukloniti fiksni margin */
+  width: 100%; /* Osigurati da se pravilno prikazuje */
+}
+
+.post-body {
+  position: relative;
+  width: 800px; /* Fiksna širina */
+  max-width: 100%; /* Da se prilagođava manjim ekranima */
+  height: auto; /* Visina se prilagođava sadržaju */
+  box-shadow: 2px 2px 12px 0px rgb(187, 187, 187);
+  overflow: hidden;
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-info-post {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.user-profile-pic-post {
+  position: relative;
+  width: 50px;
+  border-radius: 50%;
+}
+
+.h2-post {
+  position: relative;
+  display: inline-block;
+  top: -15px;
+}
+
+.date-time-post {
+  position: relative;
+  margin-left: 3rem;
+  top: -10px;
+  font-size: 15px;
+}
+
+.description-post {
+  position: relative;
+  padding: 0.5rem;
+}
+
+.upload-img-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.upload-img {
+  width: 100%;
+  height: auto;
+  max-height: 420px; /* Maksimalna visina slike */
+  object-fit: cover;
+  border-radius: 9px;
+}
+
+.reaction-comment-preview {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  padding: 0.5rem;
+  justify-content: space-between;
+}
+
+.reaction-preview {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.reaction-preview .fa-thumbs-up,
+.fa-heart {
+  position: relative;
+  border-radius: 50%;
+  background-color: rgb(19, 128, 200);
+  color: white;
+  padding: 5%;
+  border: 2px solid white;
+}
+.fa-heart {
+  background-color: rgb(221, 19, 19);
+  margin-left: -5px;
+}
+
+.count-reaction {
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
+.reactions-comment-share-icons {
+  position: relative;
+  width: 100%;
+  border-top: 1px solid gray;
+  display: flex;
+  justify-content: space-evenly;
+  font-size: 20px;
+  color: rgb(50, 50, 50);
+}
+
+.reactions-comment-share-icons > div {
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.reactions-comment-share-icons > div:nth-child(1):focus {
+  color: rgb(19, 128, 200);
+}
+
+.reactions-comment-share-icons i {
+  font-size: 16px;
+}
+
+.fa-ellipsis-v {
+  font-size: 18spx;
+  cursor: pointer;
+}
+
+.fa-earth {
+  color: rgb(100, 100, 100);
+}
+
+.date-tags-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tags-container {
+  position: relative;
+  margin-left: 3rem;
+  top: -10px;
+  font-size: 15px;
+}
+
+.tag {
+  background-color: #f1f1f1; /* Light gray background for tags */
+  color: #333; /* Darker text color */
+  border-radius: 4px; /* Rounded corners */
+  padding: 5px 10px; /* Padding for better appearance */
+  margin-left: 5px; /* Space between tags */
+  font-size: 10px; /* Tag font size */
+  transition: background-color 0.3s; /* Smooth transition on hover */
+}
+
+.tag:hover {
+  background-color: #f6f6f6;
+}
+
+.no-posts-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: #555;
+  text-align: center;
+  border-radius: 8px;
+  padding: 20px;
+}

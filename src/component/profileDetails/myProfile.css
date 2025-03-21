@@ -1,0 +1,140 @@
+.myprofile-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  margin-top: 150px;
+}
+
+.myprofile-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 30px;
+  width: 600px;
+  text-align: left;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.myprofile-header {
+  text-align: center;
+}
+
+.myprofile-picture-container {
+  margin-bottom: 15px;
+}
+
+.myprofile-picture {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #0ebcfb;
+}
+
+.myprofile-username {
+  font-size: 2em;
+  margin: 10px 0;
+  color: #0ebcfb;
+}
+
+.myprofile-name {
+  font-size: 1.6em;
+  color: #333;
+}
+
+.myprofile-bio-section {
+  margin-top: 20px;
+  font-size: 1.2em;
+  color: #333;
+  padding: 10px 0;
+}
+
+.myprofile-bio-line {
+  height: 4px;
+  background: linear-gradient(to right, #ffaf0d, #d83460, #0ebcfb);
+  margin-top: 10px;
+}
+
+.myprofile-additional-info {
+  margin-top: 20px;
+}
+
+.myprofile-info-item {
+  margin-bottom: 15px;
+}
+
+.myprofile-info-item label {
+  font-weight: bold;
+}
+
+.myprofile-info-item span {
+  margin-left: 10px;
+  color: #555;
+}
+
+.bio-link-profile {
+  display: block;
+  text-align: center;
+  color: #ffaf0d;
+  text-decoration: none;
+  font-size: 1.2em;
+  margin-top: 15px;
+  padding: 10px;
+}
+
+.myprofile-interests {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.myprofile-interest-tag {
+  background-color: #0ebcfb;
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin: 5px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.edit-button-container {
+  top: 20px;
+  right: 20px;
+}
+
+.edit-button {
+  background-color: #0ebcfb;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+}
+
+.edit-button ion-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+.edit-button:hover {
+  background-color: #ffaf0d;
+  animation: colorTransition 1s forwards;
+}
+
+@keyframes colorTransition {
+  0% {
+    background-color: #0ebcfb;
+  }
+  50% {
+    background-color: #d83460;
+  }
+  100% {
+    background-color: #ffaf0d;
+  }
+}
