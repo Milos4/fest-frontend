@@ -91,6 +91,11 @@
   font-size: 16px;
   display: flex;
   align-items: center;
+  cursor: pointer;
+}
+
+.reaction-preview:hover {
+  color: #0ebcfb;
 }
 
 .reaction-preview .fa-thumbs-up,
@@ -180,4 +185,170 @@
   text-align: center;
   border-radius: 8px;
   padding: 20px;
+}
+/*///////////////////////////////////////////////////////////////////////////*/
+.reaction-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.reaction-popup-header {
+  position: relative;
+  padding: 10px;
+  background: linear-gradient(to right, #ffaf0d, #d83460, #0ebcfb);
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  justify-content: space-between;
+  width: 30%;
+  border-bottom: 1px solid #ddd;
+  font-size: 20px;
+}
+
+.reaction-popup-header button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.reaction-popup-header button:hover {
+  color: #d83460;
+}
+
+.reaction-groups {
+  background-color: white;
+  width: 30%;
+  max-height: 70%;
+  overflow-y: auto;
+  padding: 20px;
+  border-radius: 0 0 8px 8px;
+}
+
+.reaction-group {
+  margin-bottom: 15px;
+}
+
+.reaction-type {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.reaction-type span {
+  margin-left: 8px;
+}
+
+.reaction-users {
+  margin-top: 10px;
+}
+
+.reaction-user {
+  display: inline-block;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+.comment-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.comment-popup-header {
+  position: relative; /* Bitno za pozicioniranje dugmeta unutar ovog elementa */
+  width: 70%;
+  max-height: 70%;
+
+  background: linear-gradient(to right, #ffaf0d, #d83460, #0ebcfb);
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  justify-content: space-between; /* Postavi dugme desno */
+}
+
+.comment-popup-header-text {
+  font-size: 25px;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+/* X dugme u gornjem desnom kutu */
+.close-btn {
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #000;
+  cursor: pointer;
+  padding: 5px;
+  margin-right: 10px;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #d83460;
+}
+
+/* Lista komentara */
+
+.click-comments {
+  cursor: pointer;
+}
+
+.click-comments:hover {
+  color: #ffaf0d;
+}
+
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: white;
+  padding: 20px;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  max-height: 80%;
+  overflow-y: auto;
+  width: 70%;
+}
+
+.comment-username {
+  cursor: pointer;
+}
+
+.comment-username:hover {
+  color: #0ebcfb;
+}
+
+/* Komentar stavke */
+.comment-item {
+  margin-bottom: 20px;
+}
+
+.comment-item p {
+  font-size: 14px;
+  color: #555;
+}
+
+.comment-item strong {
+  font-size: 16px;
+  font-weight: bold;
 }

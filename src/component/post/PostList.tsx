@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./postlist.css";
 import logoImg from "../../images/logo.png";
-import naruto from "../../images/Naruto.jpg";
+import ReactionPopup from "../reaction/ReactionPopup";
+import CommentPopup from "../comment/CommentPopup";
+
 import {
   faHeart,
   faEarth,
@@ -13,16 +15,11 @@ import { faCommentAlt, faThumbsUp } from "@fortawesome/free-regular-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-interface User {
-  id: number;
-  username: string;
-}
-
 interface Post {
   id: number;
   content: string;
   mediaUrl: string;
-  user: User;
+  user: string;
   reactions: any[];
   comments: any[];
   creationDate: string;
@@ -31,6 +28,11 @@ interface Post {
 
 const PostList: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+
+  const [showReactionPopup, setShowReactionPopup] = useState<boolean>(false);
+  const [currentPostReactions, setCurrentPostReactions] = useState<any[]>([]);
+  const [showCommentsPopup, setShowCommentsPopup] = useState<boolean>(false);
+  const [currentPostComments, setCurrentPostComments] = useState<any[]>([]);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData") || "{}");
@@ -54,6 +56,16 @@ const PostList: React.FC = () => {
     return date.toLocaleString();
   };
 
+  const handleReactionClick = (postReactions: any[]) => {
+    setCurrentPostReactions(postReactions);
+    setShowReactionPopup(true);
+  };
+
+  const handleCommentsClick = (postComments: any[]) => {
+    setCurrentPostComments(postComments);
+    setShowCommentsPopup(true);
+  };
+
   return (
     <>
       <div className="all-posts-container">
@@ -70,7 +82,7 @@ const PostList: React.FC = () => {
                       className="user-profile-pic-post"
                       alt=""
                     />
-                    <h2 className="h2-post">{post.user.username}</h2>
+                    <h2 className="h2-post">{post.user}</h2>
                   </div>
                   <div>
                     <FontAwesomeIcon
@@ -114,7 +126,10 @@ const PostList: React.FC = () => {
                   </div>
 
                   <div className="reaction-comment-preview">
-                    <div className="reaction-preview">
+                    <div
+                      className="reaction-preview"
+                      onClick={() => handleReactionClick(post.reactions)}
+                    >
                       <span>
                         {" "}
                         <FontAwesomeIcon
@@ -133,7 +148,12 @@ const PostList: React.FC = () => {
                       </span>
                     </div>
                     <div className="comment-share-preview">
-                      <span>{post.comments.length} comments </span>
+                      <span
+                        className="click-comments"
+                        onClick={() => handleCommentsClick(post.comments)}
+                      >
+                        {post.comments.length} comments{" "}
+                      </span>
                       <span>{post.reactions.length} shares </span>
                     </div>
                   </div>
@@ -172,6 +192,20 @@ const PostList: React.FC = () => {
           ))
         )}
       </div>
+
+      {showCommentsPopup && (
+        <CommentPopup
+          comments={currentPostComments}
+          onClose={() => setShowCommentsPopup(false)}
+        />
+      )}
+
+      {showReactionPopup && (
+        <ReactionPopup
+          reactions={currentPostReactions}
+          onClose={() => setShowReactionPopup(false)}
+        />
+      )}
     </>
   );
 };
