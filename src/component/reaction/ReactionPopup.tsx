@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons"; // Importuj ikonu X
+import { useNavigate } from "react-router-dom";
 
 import {
   faHeart,
@@ -14,6 +15,7 @@ import {
 interface Reaction {
   username: string;
   type: string;
+  userID: number;
 }
 
 interface ReactionPopupProps {
@@ -27,12 +29,23 @@ const ReactionPopup: React.FC<ReactionPopupProps> = ({
 }) => {
   const [filter, setFilter] = useState("ALL");
 
+  const navigate = useNavigate();
+
+  const handleUsernameClick = (userId: number) => {
+    navigate(`/profile/${userId}`);
+    onClose();
+  };
+
   // Grupisanje reakcija po vrsti
   const groupedReactions = reactions.reduce((acc, reaction) => {
     acc[reaction.type] = acc[reaction.type] || [];
-    acc[reaction.type].push(reaction.username);
+    acc[reaction.type].push({
+      userId: reaction.userID,
+      username: reaction.username,
+      type: reaction.type,
+    });
     return acc;
-  }, {} as { [key: string]: string[] });
+  }, {} as { [key: string]: { userId: number; username: string; type: string }[] });
 
   // Pravi listu filtera prema vrstama reakcija koje imamo u podacima
   const availableReactions = Object.keys(groupedReactions);
@@ -66,6 +79,7 @@ const ReactionPopup: React.FC<ReactionPopupProps> = ({
   // Funkcija za rukovanje promenom filtera
   const handleFilterChange = (filterType: string) => {
     setFilter(filterType);
+    console.log(reactions);
   };
 
   return (
@@ -78,7 +92,7 @@ const ReactionPopup: React.FC<ReactionPopupProps> = ({
             key={reactionType}
             onClick={() => handleFilterChange(reactionType)}
           >
-            {renderReactionIcon(reactionType)} {reactionType}
+            {renderReactionIcon(reactionType)}
           </button>
         ))}
         <button onClick={onClose}>
@@ -88,22 +102,28 @@ const ReactionPopup: React.FC<ReactionPopupProps> = ({
       </div>
 
       <div className="reaction-groups">
-        {/* Provera da li filteredReactions nije undefined i da sadrži reakcije */}
         {Object.entries(filteredReactions).length > 0 ? (
           Object.entries(filteredReactions).map(([type, users]) => (
             <div key={type} className="reaction-group">
               <div className="reaction-type">
-                {renderReactionIcon(type)}
+                <div className="reaction-type-img">
+                  {" "}
+                  {renderReactionIcon(type)}
+                </div>
+
                 <span>{type}</span>
-                <span>({users.length})</span> {/* Broj korisnika */}
+                <span>{users.length}</span>
               </div>
               <div className="reaction-users">
-                {/* Provera da li korisnici postoje */}
                 {users && users.length > 0 ? (
                   users.map((username, idx) => (
-                    <span key={idx} className="reaction-user">
-                      {username}
-                    </span>
+                    <div
+                      key={idx}
+                      className="reaction-user"
+                      onClick={() => handleUsernameClick(username.userId)}
+                    >
+                      {username.username}
+                    </div>
                   ))
                 ) : (
                   <span>No users</span>

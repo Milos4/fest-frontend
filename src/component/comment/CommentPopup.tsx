@@ -19,6 +19,7 @@ const CommentPopup: React.FC<CommentPopupProps> = ({ comments, onClose }) => {
 
   const handleUsernameClick = (userId: number) => {
     navigate(`/profile/${userId}`);
+    onClose();
   };
   return (
     <div className="comment-popup">
@@ -37,7 +38,7 @@ const CommentPopup: React.FC<CommentPopupProps> = ({ comments, onClose }) => {
             >
               {comment.username}
             </strong>
-            <p>{comment.content}</p>
+            <p> {comment.content}</p>
           </div>
         ))}
       </div>

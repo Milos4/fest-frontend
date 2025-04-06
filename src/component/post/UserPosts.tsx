@@ -12,17 +12,16 @@ import {
   faShare,
 } from "@fortawesome/free-solid-svg-icons";
 import { faCommentAlt, faThumbsUp } from "@fortawesome/free-regular-svg-icons";
-
-interface User {
-  id: number;
-  username: string;
-}
+import ReactionPopup from "../reaction/ReactionPopup";
+import CommentPopup from "../comment/CommentPopup";
 
 interface Post {
   id: number;
   content: string;
   mediaUrl: string;
-  user: User;
+  user: string;
+  userId: number;
+  userProfilePic: string;
   reactions: any[];
   comments: any[];
   creationDate: string;
@@ -32,6 +31,15 @@ interface Post {
 const UserPosts: React.FC = () => {
   const { userId } = useParams<{ userId: string }>(); // Get the userId from URL params
   const [posts, setPosts] = useState<Post[]>([]);
+
+  const [showReactionPopup, setShowReactionPopup] = useState<boolean>(false);
+  const [currentPostReactions, setCurrentPostReactions] = useState<any[]>([]);
+  const [showCommentsPopup, setShowCommentsPopup] = useState<boolean>(false);
+  const [currentPostComments, setCurrentPostComments] = useState<any[]>([]);
+
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+  const currentUserId = userData.id;
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -55,6 +63,33 @@ const UserPosts: React.FC = () => {
     return date.toLocaleString();
   };
 
+  const handleReactionClick = (postReactions: any[]) => {
+    setCurrentPostReactions(postReactions);
+    setShowReactionPopup(true);
+  };
+
+  const handleCommentsClick = (postComments: any[]) => {
+    setCurrentPostComments(postComments);
+    setShowCommentsPopup(true);
+  };
+
+  const handleDelete = async (postId: number, userId: number) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/posts/${postId}`, {
+        params: { userId },
+      });
+      setPosts(posts.filter((post) => post.id !== postId));
+      setOpenMenuId(null);
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  };
+
+  const handleReport = (postId: number) => {
+    console.log(`Post ${postId} reported! by ${currentUserId}`);
+    setOpenMenuId(null);
+  };
+
   return (
     <div className="all-posts-container">
       {posts.length === 0 ? (
@@ -66,13 +101,40 @@ const UserPosts: React.FC = () => {
               <div className="user-info-post">
                 <div className="user-post">
                   <img src={logoImg} className="user-profile-pic-post" alt="" />
-                  <h2 className="h2-post">{post.user.username}</h2>
+                  <h2 className="h2-post">{post.user}</h2>
                 </div>
-                <div>
-                  <FontAwesomeIcon
-                    icon={faEllipsisV}
-                    className="fa-ellipsis-v"
-                  />
+                <div className="relative">
+                  <div
+                    onClick={() =>
+                      setOpenMenuId(openMenuId === post.id ? null : post.id)
+                    }
+                    className="cursor-pointer"
+                  >
+                    <FontAwesomeIcon
+                      icon={faEllipsisV}
+                      className="fa-ellipsis-v"
+                    />
+                  </div>
+
+                  {openMenuId === post.id && (
+                    <div className="absolute right-0 mt-2 w-32 bg-white border rounded shadow-lg z-10">
+                      {currentUserId === post.userId ? (
+                        <button
+                          className="buttonOptions"
+                          onClick={() => handleDelete(post.id, currentUserId)}
+                        >
+                          Delete
+                        </button>
+                      ) : (
+                        <button
+                          className="buttonOptions"
+                          onClick={() => handleReport(post.id)}
+                        >
+                          Report
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="date-tags-container">
@@ -103,7 +165,10 @@ const UserPosts: React.FC = () => {
                   </div>
                 )}
                 <div className="reaction-comment-preview">
-                  <div className="reaction-preview">
+                  <div
+                    className="reaction-preview"
+                    onClick={() => handleReactionClick(post.reactions)}
+                  >
                     <span>
                       <FontAwesomeIcon
                         icon={faThumbsUp}
@@ -121,7 +186,12 @@ const UserPosts: React.FC = () => {
                     </span>
                   </div>
                   <div className="comment-share-preview">
-                    <span>{post.comments.length} comments </span>
+                    <span
+                      className="click-comments"
+                      onClick={() => handleCommentsClick(post.comments)}
+                    >
+                      {post.comments.length} comments{" "}
+                    </span>
                     <span>2.5k share </span>
                   </div>
                 </div>
@@ -158,6 +228,19 @@ const UserPosts: React.FC = () => {
             </div>
           </div>
         ))
+      )}
+      {showCommentsPopup && (
+        <CommentPopup
+          comments={currentPostComments}
+          onClose={() => setShowCommentsPopup(false)}
+        />
+      )}
+
+      {showReactionPopup && (
+        <ReactionPopup
+          reactions={currentPostReactions}
+          onClose={() => setShowReactionPopup(false)}
+        />
       )}
     </div>
   );
