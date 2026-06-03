@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 */
+.profile-page-with-nav .main-content {
+  padding-top: 120px;
+}
+
 .profile-body {
   display: flex;
   justify-content: center;
@@ -11,6 +15,7 @@
   min-height: 50vh;
   background: #fff;
   margin-bottom: -120px;
+  transition: min-height 0.5s ease, margin-bottom 0.5s ease;
 }
 
 .profile-card {
@@ -22,7 +27,7 @@
   margin-bottom: -50px;
 }
 .profile-card:hover {
-  height: 300px;
+  height: 340px;
 }
 
 .profile-card .profile-lines {
@@ -147,7 +152,12 @@
 }
 
 .profile-card:hover .profile-content .profile-detials {
-  transform: translateY(70px);
+  transform: translateY(55px);
+}
+
+.profile-body:has(.profile-card:hover) {
+  min-height: 64vh;
+  margin-bottom: -10px;
 }
 
 .profile-card .profile-content .profile-detials .profile-h2 {
@@ -202,6 +212,137 @@
   background-color: rgb(150, 150, 150);
   color: #fff;
   cursor: pointer;
+}
+
+.profile-privacy-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  margin: 6px 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-privacy-status.private {
+  background: #fff0f0;
+  color: #b42318;
+}
+
+.profile-privacy-status.public {
+  background: #eefbf3;
+  color: #157347;
+}
+
+.profile-message-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.profile-private-inline {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff0f0;
+  color: #b42318;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.profile-bio-panel {
+  width: 800px;
+  max-width: 100%;
+  margin: 20px auto 0;
+  padding: 24px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 2px 2px 12px 0px rgb(187, 187, 187);
+}
+
+.profile-bio-panel h3 {
+  margin: 0 0 18px;
+  color: #303030;
+}
+
+.profile-bio-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.profile-bio-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-bio-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #666;
+}
+
+.profile-bio-link {
+  color: #0ebcfb;
+  font-weight: 800;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.profile-bio-link:hover {
+  color: #d83460;
+}
+
+.profile-bio-interests {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-interest-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.profile-interest-chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #0f4c81;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.profile-private-panel {
+  width: 800px;
+  max-width: 100%;
+  margin: 20px auto 0;
+  padding: 28px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 2px 2px 12px 0px rgb(187, 187, 187);
+  text-align: center;
+}
+
+.profile-private-panel h3 {
+  margin: 0 0 10px;
+  color: #b42318;
+}
+
+.profile-private-panel p {
+  margin: 0;
+  color: #555;
+}
+
+@media (max-width: 720px) {
+  .profile-bio-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .hidden-space {

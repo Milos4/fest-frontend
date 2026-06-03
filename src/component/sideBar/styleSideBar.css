@@ -1,10 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+﻿@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
 * {
   margin: 0;
   box-sizing: border-box;
   padding: 0;
-  font-family: "Poppinss", sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .side-nav {
@@ -20,22 +20,27 @@
   justify-content: space-between;
   flex-direction: column;
 }
-.profile-page-sidebar {
-  height: 100%;
+
+.side-nav-full {
   top: 0;
+  height: 100%;
+}
+
+.sidebar-main {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 
 .user {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
   width: 100%;
   font-size: 12px;
   padding: 10px;
   border-radius: 8px;
   margin-top: 20px;
-  margin-left: auto;
-  margin-right: auto;
   background: rgba(125, 125, 125, 0.2);
   backdrop-filter: blur(5px);
 }
@@ -46,51 +51,66 @@
   white-space: nowrap;
 }
 
+.user p {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .user-img {
   width: 40px;
+  height: 40px;
   border-radius: 50%;
-  margin: auto;
-}
-.verified-img {
-  width: 20px;
-  margin-left: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .sidebar ul {
   list-style: none;
   padding: 0 15px;
 }
+
 .sidebar ul li {
-  margin: 30px 0;
+  margin: 14px 0;
   display: flex;
   align-items: center;
-  justify-content: left;
   cursor: pointer;
-  padding: 10px;
-  border-radius: 12px; /* Zaobljene ivice */
-  transition: all 0.3s ease-in-out;
+  padding: 12px 10px;
+  border-radius: 8px;
+  transition: all 0.25s ease-in-out;
 }
 
 .sidebar ul li:hover {
-  background: rgba(125, 125, 125, 0.3); /* Sivkasta nijansa pri hoveru */
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Senka */
-  transform: scale(1.05); /* Blagi zoom efekat */
+  background: rgba(125, 125, 125, 0.3);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  transform: translateX(3px);
 }
 
-.sidebar ul li img {
-  width: 40px;
-  margin-right: 10px;
-  transition: filter 0.3s ease-in-out;
+.sidebar ul li.active {
+  background: rgba(216, 52, 96, 0.18);
+  box-shadow: 0px 4px 12px rgba(216, 52, 96, 0.22);
 }
 
-.sidebar ul li:hover img {
-  filter: brightness(80%);
+.sidebar ul li.active .sidebar-icon,
+.sidebar ul li.active p {
+  color: #d83460;
 }
 
-.sidebar ul li:last-child {
-  margin-bottom: 0px;
+.sidebar-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  color: #222;
 }
 
 .sidebar ul li p {
   white-space: nowrap;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.sidebar-logout {
+  margin-top: auto;
+  padding-bottom: 10px !important;
 }

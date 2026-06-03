@@ -1,90 +1,59 @@
 import React from "react";
 import "./profileDetails.css";
-import profile from "../../images/Naruto.jpg";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { IonIcon } from "@ionic/react";
+import {
+  globeOutline,
+  lockClosedOutline,
+  mailOutline,
+} from "ionicons/icons";
 
-interface ProfileProps {
-  userData: any; // Define the type of userData
+interface ProfileDetailsProps {
+  userData: any;
+  isOwnProfile: boolean;
+  isPrivateProfile: boolean;
+  isFollowing: boolean;
+  hasPendingRequest: boolean;
+  canViewProfile: boolean;
+  isFollowLoading: boolean;
+  onFollowToggle: () => void;
+  onMessageClick?: () => void;
+  postCount: number;
+  followerCount: number;
+  followingCount: number;
 }
 
-const ProfileDetails: React.FC<ProfileProps> = ({ userData }) => {
-  const loggedInUser = JSON.parse(localStorage.getItem("userData") || "{}");
-  const isMyProfile = loggedInUser.id === userData.id;
-
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const checkFollowingStatus = async () => {
-      if (!loggedInUser.id || !userData.id || isMyProfile) return;
-
-      try {
-        const response = await fetch(
-          "http://localhost:8080/api/follow/is-following",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              followerId: loggedInUser.id,
-              followingId: userData.id,
-            }),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch follow status");
-        }
-
-        const result = await response.json();
-        setIsFollowing(result);
-      } catch (error) {
-        console.error("Error checking follow status:", error);
-      }
-    };
-
-    checkFollowingStatus();
-  }, [loggedInUser.id, userData.id, isMyProfile]);
-
-  const handleFollowToggle = async () => {
-    if (loading) return;
-    setLoading(true);
-
-    try {
-      const response = await fetch("http://localhost:8080/api/follow/toggle", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          followerId: loggedInUser.id,
-          followingId: userData.id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to toggle follow status");
-      }
-
-      const data = await response.json();
-      setIsFollowing(data.isFollowing);
-    } catch (error) {
-      console.error("Error toggling follow status:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const ProfileDetails: React.FC<ProfileDetailsProps> = ({
+  userData,
+  isOwnProfile,
+  isPrivateProfile,
+  isFollowing,
+  hasPendingRequest,
+  canViewProfile,
+  isFollowLoading,
+  onFollowToggle,
+  onMessageClick,
+  postCount,
+  followerCount,
+  followingCount,
+}) => {
+  const followButtonText = isFollowing
+    ? "Unfollow"
+    : hasPendingRequest
+    ? "Requested"
+    : isPrivateProfile
+    ? "Request follow"
+    : "Follow";
 
   return (
     <div className="profile-body">
       <div className="profile-card">
         <div className="profile-lines"></div>
         <div className="profile-imgBx">
-          {userData.bio?.profilePictureUrl && (
-            <img
-              src={userData.bio.profilePictureUrl}
-              alt="Profile"
-              className="profileD-picture"
-            />
-          )}
+          <img
+            src={userData.bio?.profilePictureUrl || ""}
+            alt="Profile"
+            className="profileD-picture"
+          />
         </div>
         <div className="profile-content">
           <div className="profile-detials">
@@ -96,29 +65,56 @@ const ProfileDetails: React.FC<ProfileProps> = ({ userData }) => {
                 {userData.bio?.lastName || "\u00A0"}
               </span>
             </h2>
-            <div className="profile-data">
-              <h3 className="profile-h3">
-                32{/* {userData.posts} */}
-                <br />
-                <span>Posts</span>
-              </h3>
-              <h3 className="profile-h3">
-                350 {/* {userData.followers} */}
-                <br />
-                <span>Followers</span>
-              </h3>
-              <h3 className="profile-h3">
-                300{/* {userData.following} */}
-                <br />
-                <span>Following</span>
-              </h3>
+
+            <div
+              className={`profile-privacy-status ${
+                isPrivateProfile ? "private" : "public"
+              }`}
+            >
+              <IonIcon
+                icon={isPrivateProfile ? lockClosedOutline : globeOutline}
+              />
+              <span>
+                {isPrivateProfile ? "Private profile" : "Public profile"}
+              </span>
             </div>
-            {!isMyProfile && (
+
+            {canViewProfile ? (
+              <div className="profile-data">
+                <h3 className="profile-h3">
+                  {postCount}
+                  <br />
+                  <span>Posts</span>
+                </h3>
+                <h3 className="profile-h3">
+                  {followerCount}
+                  <br />
+                  <span>Followers</span>
+                </h3>
+                <h3 className="profile-h3">
+                  {followingCount}
+                  <br />
+                  <span>Following</span>
+                </h3>
+              </div>
+            ) : (
+              <div className="profile-private-inline">
+                This account is private
+              </div>
+            )}
+
+            {!isOwnProfile && (
               <div className="profile-actionBtn">
-                <button onClick={handleFollowToggle} disabled={loading}>
-                  {loading ? "Loading..." : isFollowing ? "Unfollow" : "Follow"}
+                <button
+                  onClick={onFollowToggle}
+                  disabled={isFollowLoading || hasPendingRequest}
+                >
+                  {isFollowLoading ? "Loading..." : followButtonText}
                 </button>
-                <button>Message</button>
+                <button className="profile-message-btn" onClick={onMessageClick}>
+                  <IonIcon icon={mailOutline} />
+                  <span>Message</span>
+                </button>
               </div>
             )}
           </div>

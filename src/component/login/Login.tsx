@@ -3,6 +3,7 @@ import "./style.css";
 import logoImg from "../../images/logo.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { markUserOnline } from "../messages/presence";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const Login: React.FC = () => {
       });
       const userData = response.data;
       localStorage.setItem("userData", JSON.stringify(userData));
+      markUserOnline(Number(userData.id) || null);
       navigate("/home");
       console.log(response.data);
     } catch (error) {

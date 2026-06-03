@@ -1,106 +1,197 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHouse,
+  faCalendarDays,
+  faCalendarPlus,
+  faCalendarCheck,
+  faUser,
+  faRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
 
 import "./styleSideBar.css";
 
 import userImg from "../../images/user.png";
-import verifiedImg from "../../images/verified.png";
-import eventsImg from "../../images/events.png";
-import clubEventsImg from "../../images/club-events.png";
-import ratingImg from "../../images/rating.png";
-import followersImg from "../../images/followers.png";
-import locationImg from "../../images/location.png";
-import videoChatImg from "../../images/video-chat.png";
-import myClub from "../../images/my-club.png";
-import home from "../../images/home.png";
+import { HomeView } from "../events/eventTypes";
 
-import logoutImg from "../../images/logout.png";
+interface SideBarProps {
+  onSelectHomeView?: (view: HomeView) => void;
+  activeHomeView?: HomeView;
+  withTopNav?: boolean;
+}
 
-const SideBar: React.FC = () => {
-  const location = useLocation();
+const SideBar: React.FC<SideBarProps> = ({
+  onSelectHomeView,
+  activeHomeView,
+  withTopNav = false,
+}) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHomePage = location.pathname === "/home";
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-
-  // Add a class to the sidebar if it's the profile page to extend side bar 100%
-  const isProfilePage = location.pathname.startsWith("/profile/");
-  const sidebarClass = isProfilePage ? "profile-page-sidebar" : "";
+  const [userId, setUserId] = useState<number | null>(null);
+  const [profilePictureUrl, setProfilePictureUrl] = useState("");
 
   useEffect(() => {
-    // Check if user data exists in local storage
     const userDataStr = localStorage.getItem("userData");
     if (userDataStr) {
-      // Parse the stored JSON string to extract username and email
       const userData = JSON.parse(userDataStr);
-      // Set username and email in state
       setUsername(userData.username);
       setEmail(userData.email);
+      setUserId(userData.id);
+      setProfilePictureUrl(userData.bio?.profilePictureUrl || "");
     }
   }, []);
 
-  //Sidebar nav
-  const handleHomeClick = () => {
-    navigate("/home");
-  };
+  useEffect(() => {
+    if (!userId) {
+      return;
+    }
+
+    const fetchProfilePicture = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/users/${userId}`);
+        if (!response.ok) return;
+
+        const profile = await response.json();
+        const nextProfilePictureUrl = profile.bio?.profilePictureUrl || "";
+        setProfilePictureUrl(nextProfilePictureUrl);
+
+        const userDataStr = localStorage.getItem("userData");
+        if (userDataStr) {
+          const userData = JSON.parse(userDataStr);
+          localStorage.setItem(
+            "userData",
+            JSON.stringify({
+              ...userData,
+              bio: {
+                ...(userData.bio || {}),
+                ...(profile.bio || {}),
+                profilePictureUrl: nextProfilePictureUrl,
+              },
+            })
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching sidebar profile picture:", error);
+      }
+    };
+
+    fetchProfilePicture();
+  }, [userId]);
+
+  useEffect(() => {
+    const handleProfileUpdated = (event: Event) => {
+      const customEvent = event as CustomEvent<{
+        userId?: number;
+        profilePictureUrl?: string;
+      }>;
+
+      if (
+        customEvent.detail?.userId &&
+        String(customEvent.detail.userId) !== String(userId)
+      ) {
+        return;
+      }
+
+      setProfilePictureUrl(customEvent.detail?.profilePictureUrl || "");
+    };
+
+    window.addEventListener("profile-updated", handleProfileUpdated);
+
+    return () => {
+      window.removeEventListener("profile-updated", handleProfileUpdated);
+    };
+  }, [userId]);
 
   const handleLogout = () => {
-    localStorage.clear(); // Briše sve iz localStorage-a
-    sessionStorage.clear(); // Briše sve iz sessionStorage-a
-    window.location.href = "/"; // Vraća korisnika na početnu stranicu
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "/";
   };
+
+  const handleHomeViewClick = (view: HomeView) => {
+    if (isHomePage && onSelectHomeView) {
+      onSelectHomeView(view);
+      return;
+    }
+
+    navigate("/home", { state: { homeView: view } });
+  };
+
+  const menuItems = [
+    {
+      label: "Home",
+      icon: faHouse,
+      view: "feed" as HomeView,
+      onClick: () => handleHomeViewClick("feed"),
+    },
+    {
+      label: "Events",
+      icon: faCalendarDays,
+      view: "events" as HomeView,
+      onClick: () => handleHomeViewClick("events"),
+    },
+    {
+      label: "Create Event",
+      icon: faCalendarPlus,
+      view: "create-event" as HomeView,
+      onClick: () => handleHomeViewClick("create-event"),
+    },
+    {
+      label: "My Events",
+      icon: faCalendarCheck,
+      view: "my-events" as HomeView,
+      onClick: () => handleHomeViewClick("my-events"),
+    },
+    {
+      label: "My Profile",
+      icon: faUser,
+      view: "my-profile" as HomeView,
+      onClick: () => handleHomeViewClick("my-profile"),
+    },
+  ];
 
   return (
     <nav className="sidebar">
-      <div className={`side-nav ${sidebarClass}`}>
-        <div className="user">
-          <img src={userImg} className="user-img" alt="User" />
-          <div>
-            <h2>{username}</h2>
-            <p>{email}</p>
+      <div
+        className={`side-nav ${!isHomePage && !withTopNav ? "side-nav-full" : ""}`}
+      >
+        <div className="sidebar-main">
+          <div className="user">
+            <img
+              src={profilePictureUrl || userImg}
+              className="user-img"
+              alt="User"
+            />
+            <div>
+              <h2>{username}</h2>
+              <p>{email}</p>
+            </div>
           </div>
-          <img src={verifiedImg} className="verified-img" alt="Verified" />
-        </div>
-        <ul>
-          {isProfilePage && (
-            <li>
-              <img src={home} alt="Home" onClick={handleHomeClick} />
-              <p onClick={handleHomeClick}>Home</p>
-            </li>
-          )}
 
-          <li>
-            <img src={eventsImg} alt="Events" />
-            <p>Events</p>
-          </li>
-          <li>
-            <img src={clubEventsImg} alt="Clubs Events" />
-            <p>Clubs Event</p>
-          </li>
-          <li>
-            <img src={locationImg} alt="Location" />
-            <p>Location</p>
-          </li>
-          <li>
-            <img src={followersImg} alt="Followers" />
-            <p>Followers</p>
-          </li>
-          <li>
-            <img src={videoChatImg} alt="Video Chat" />
-            <p>Video Chat</p>
-          </li>
-          <li>
-            <img src={ratingImg} alt="Rating" />
-            <p>Rating</p>
-          </li>
-          <li>
-            <img src={myClub} alt="Club" />
-            <p>My Club</p>
-          </li>
-        </ul>
-        <ul>
+          <ul className="sidebar-menu">
+            {menuItems.map((item) => (
+              <li
+                key={item.label}
+                onClick={item.onClick}
+                className={
+                  item.view && activeHomeView === item.view ? "active" : ""
+                }
+              >
+                <FontAwesomeIcon icon={item.icon} className="sidebar-icon" />
+                <p>{item.label}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <ul className="sidebar-logout">
           <li onClick={handleLogout}>
-            <img src={logoutImg} alt="Logout" />
+            <FontAwesomeIcon icon={faRightFromBracket} className="sidebar-icon" />
             <p>Logout</p>
           </li>
         </ul>

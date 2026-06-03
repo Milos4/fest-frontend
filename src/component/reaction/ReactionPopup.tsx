@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons"; // Importuj ikonu X
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -9,13 +10,23 @@ import {
   faLaugh,
   faSadTear,
   faAngry,
-  faGrinStars, // za WOW
+  faGrinStars,
 } from "@fortawesome/free-solid-svg-icons";
 
 interface Reaction {
   username: string;
   type: string;
-  userID: number;
+  userID?: number;
+  userId?: number;
+  userProfilePictureUrl?: string;
+  profilePictureUrl?: string;
+  userProfilePic?: string;
+  profilePicture?: string;
+  user?: {
+    bio?: {
+      profilePictureUrl?: string;
+    };
+  };
 }
 
 interface ReactionPopupProps {
@@ -28,7 +39,9 @@ const ReactionPopup: React.FC<ReactionPopupProps> = ({
   onClose,
 }) => {
   const [filter, setFilter] = useState("ALL");
-
+  const [profileImagesByUserId, setProfileImagesByUserId] = useState<{
+    [userId: number]: string;
+  }>({});
   const navigate = useNavigate();
 
   const handleUsernameClick = (userId: number) => {
@@ -36,27 +49,89 @@ const ReactionPopup: React.FC<ReactionPopupProps> = ({
     onClose();
   };
 
-  // Grupisanje reakcija po vrsti
+  const getReactionProfileImage = (reaction: Reaction) =>
+    reaction.userProfilePictureUrl ||
+    reaction.profilePictureUrl ||
+    reaction.userProfilePic ||
+    reaction.profilePicture ||
+    reaction.user?.bio?.profilePictureUrl ||
+    "";
+
+  const getReactionUserId = (reaction: Reaction) =>
+    reaction.userID || reaction.userId || 0;
+
+  useEffect(() => {
+    const reactionsWithoutImages = reactions.filter(
+      (reaction) =>
+        getReactionUserId(reaction) &&
+        !getReactionProfileImage(reaction) &&
+        !(getReactionUserId(reaction) in profileImagesByUserId)
+    );
+
+    const uniqueUserIds = Array.from(
+      new Set(reactionsWithoutImages.map((reaction) => getReactionUserId(reaction)))
+    );
+
+    if (uniqueUserIds.length === 0) return;
+
+    let isMounted = true;
+
+    const fetchMissingProfileImages = async () => {
+      try {
+        const users = await Promise.all(
+          uniqueUserIds.map(async (userId) => {
+            const response = await axios.get(
+              `http://localhost:8080/api/users/${userId}`
+            );
+
+            return {
+              userId,
+              profileImage: response.data?.bio?.profilePictureUrl || "",
+            };
+          })
+        );
+
+        if (!isMounted) return;
+
+        setProfileImagesByUserId((prev) => {
+          const next = { ...prev };
+          users.forEach(({ userId, profileImage }) => {
+            next[userId] = profileImage;
+          });
+          return next;
+        });
+      } catch (error) {
+        console.error("Error fetching reaction profile images:", error);
+      }
+    };
+
+    fetchMissingProfileImages();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [reactions, profileImagesByUserId]);
+
   const groupedReactions = reactions.reduce((acc, reaction) => {
     acc[reaction.type] = acc[reaction.type] || [];
+    const userId = getReactionUserId(reaction);
+
     acc[reaction.type].push({
-      userId: reaction.userID,
+      userId,
       username: reaction.username,
       type: reaction.type,
+      profileImage:
+        getReactionProfileImage(reaction) || profileImagesByUserId[userId] || "",
     });
     return acc;
-  }, {} as { [key: string]: { userId: number; username: string; type: string }[] });
+  }, {} as { [key: string]: { userId: number; username: string; type: string; profileImage: string }[] });
 
-  // Pravi listu filtera prema vrstama reakcija koje imamo u podacima
   const availableReactions = Object.keys(groupedReactions);
-
-  // Filtriranje reakcija prema izabranom tipu
-  const filteredReactions =
+  const filteredUsers =
     filter === "ALL"
-      ? groupedReactions
-      : { [filter]: groupedReactions[filter] };
+      ? Object.values(groupedReactions).flat()
+      : groupedReactions[filter] || [];
 
-  // Funkcija za prikazivanje ikona reakcija
   const renderReactionIcon = (type: string) => {
     switch (type) {
       case "LIKE":
@@ -72,68 +147,69 @@ const ReactionPopup: React.FC<ReactionPopupProps> = ({
       case "WOW":
         return <FontAwesomeIcon icon={faGrinStars} />;
       default:
-        return null;
+        return <FontAwesomeIcon icon={faThumbsUp} />;
     }
   };
 
-  // Funkcija za rukovanje promenom filtera
-  const handleFilterChange = (filterType: string) => {
-    setFilter(filterType);
-    console.log(reactions);
-  };
-
   return (
-    <div className="reaction-popup">
-      <div className="reaction-popup-header">
-        {/* Kreiraj dugmadi za filter samo za dostupne reakcije */}
-        <button onClick={() => handleFilterChange("ALL")}>All</button>
-        {availableReactions.map((reactionType) => (
-          <button
-            key={reactionType}
-            onClick={() => handleFilterChange(reactionType)}
-          >
-            {renderReactionIcon(reactionType)}
+    <div className="post-popup-overlay" onClick={onClose}>
+      <div className="post-popup-card" onClick={(e) => e.stopPropagation()}>
+        <div className="post-popup-header">
+          <div>
+            <h3>Likes</h3>
+            <p>{reactions.length} people reacted</p>
+          </div>
+          <button className="post-popup-close" onClick={onClose}>
+            <FontAwesomeIcon icon={faTimes} />
           </button>
-        ))}
-        <button onClick={onClose}>
-          {" "}
-          <FontAwesomeIcon icon={faTimes} />
-        </button>
-      </div>
+        </div>
 
-      <div className="reaction-groups">
-        {Object.entries(filteredReactions).length > 0 ? (
-          Object.entries(filteredReactions).map(([type, users]) => (
-            <div key={type} className="reaction-group">
-              <div className="reaction-type">
-                <div className="reaction-type-img">
-                  {" "}
-                  {renderReactionIcon(type)}
-                </div>
+        <div className="reaction-filter-row">
+          <button
+            className={`reaction-filter ${filter === "ALL" ? "active" : ""}`}
+            onClick={() => setFilter("ALL")}
+          >
+            All
+          </button>
+          {availableReactions.map((reactionType) => (
+            <button
+              key={reactionType}
+              className={`reaction-filter ${
+                filter === reactionType ? "active" : ""
+              }`}
+              onClick={() => setFilter(reactionType)}
+            >
+              {renderReactionIcon(reactionType)}
+              <span>{groupedReactions[reactionType].length}</span>
+            </button>
+          ))}
+        </div>
 
-                <span>{type}</span>
-                <span>{users.length}</span>
-              </div>
-              <div className="reaction-users">
-                {users && users.length > 0 ? (
-                  users.map((username, idx) => (
-                    <div
-                      key={idx}
-                      className="reaction-user"
-                      onClick={() => handleUsernameClick(username.userId)}
-                    >
-                      {username.username}
-                    </div>
-                  ))
-                ) : (
-                  <span>No users</span>
-                )}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div>No reactions available</div> // Ako nema reakcija za selektovani filter
-        )}
+        <div className="post-popup-list">
+          {filteredUsers.length > 0 ? (
+            filteredUsers.map((user, idx) => (
+              <button
+                key={`${user.userId}-${idx}`}
+                className="reaction-user-row"
+                onClick={() => handleUsernameClick(user.userId)}
+              >
+                <span className="reaction-user-avatar">
+                  {user.profileImage ? (
+                    <img src={user.profileImage} alt={user.username} />
+                  ) : (
+                    user.username?.charAt(0)?.toUpperCase() || "U"
+                  )}
+                </span>
+                <span className="reaction-user-name">{user.username}</span>
+                <span className="reaction-user-type">
+                  {renderReactionIcon(user.type)}
+                </span>
+              </button>
+            ))
+          ) : (
+            <div className="post-popup-empty">No reactions yet.</div>
+          )}
+        </div>
       </div>
     </div>
   );

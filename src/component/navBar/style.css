@@ -16,7 +16,7 @@
   width: 100%;
   height: 110px;
   background: #fff;
-  z-index: 1;
+  z-index: 100;
 }
 
 .logo-section {
@@ -41,7 +41,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 40px;
-  z-index: 2;
+  z-index: 110;
 }
 
 .navigation ul {
@@ -292,4 +292,9 @@
   align-items: center;
   z-index: 2; /* Postavlja broj iznad ostalog sadržaja */
   box-shadow: 0 0 5px 3px rgba(216, 52, 96, 0.8);
+}
+
+.message-badge {
+  background-color: #0ebcfb;
+  box-shadow: 0 0 5px 3px rgba(14, 188, 251, 0.75);
 }

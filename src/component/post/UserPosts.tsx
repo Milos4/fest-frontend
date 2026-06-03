@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from "react";
 import axios from "axios";
 import "./postlist.css";
 import logoImg from "../../images/logo.png";
-import naruto from "../../images/Naruto.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart,
   faEllipsisV,
   faEarth,
-  faShare,
 } from "@fortawesome/free-solid-svg-icons";
 import { faCommentAlt, faThumbsUp } from "@fortawesome/free-regular-svg-icons";
 import ReactionPopup from "../reaction/ReactionPopup";
 import CommentPopup from "../comment/CommentPopup";
+import ReportPostModal from "./ReportPostModal";
+import DeletePostModal from "./DeletePostModal";
 
 interface Post {
   id: number;
@@ -22,41 +21,38 @@ interface Post {
   user: string;
   userId: number;
   userProfilePic: string;
+  userProfilePictureUrl?: string;
   reactions: any[];
   comments: any[];
   creationDate: string;
   tags: string[];
 }
 
-const UserPosts: React.FC = () => {
-  const { userId } = useParams<{ userId: string }>(); // Get the userId from URL params
-  const [posts, setPosts] = useState<Post[]>([]);
+interface UserPostsProps {
+  posts: Post[];
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+}
 
+const UserPosts: React.FC<UserPostsProps> = ({ posts, setPosts }) => {
   const [showReactionPopup, setShowReactionPopup] = useState<boolean>(false);
   const [currentPostReactions, setCurrentPostReactions] = useState<any[]>([]);
   const [showCommentsPopup, setShowCommentsPopup] = useState<boolean>(false);
   const [currentPostComments, setCurrentPostComments] = useState<any[]>([]);
 
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [openMenuIdComment, setOpenMenuIdComment] = useState<number | null>(
+    null
+  );
+  const [reportPostId, setReportPostId] = useState<number | null>(null);
+  const [deletePostId, setDeletePostId] = useState<number | null>(null);
+  const [isDeletingPost, setIsDeletingPost] = useState(false);
+  const [commentInputs, setCommentInputs] = useState<{ [key: number]: string }>(
+    {}
+  );
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
   const currentUserId = userData.id;
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get<Post[]>(
-          `http://localhost:8080/api/posts/${userId}` // Fetch posts for specific user
-        );
-        setPosts(response.data);
-      } catch (error) {
-        console.error("Error fetching posts for user:", error);
-      }
-    };
-
-    if (userId) {
-      fetchPosts(); // Fetch posts only if userId exists
-    }
-  }, [userId]);
+  const username = userData.username;
+  const userProfilePictureUrl = userData.bio?.profilePictureUrl || "";
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -73,34 +69,147 @@ const UserPosts: React.FC = () => {
     setShowCommentsPopup(true);
   };
 
-  const handleDelete = async (postId: number, userId: number) => {
+  const handleCommentClick = (postId: number) => {
+    setShowCommentsPopup(false);
+    setOpenMenuIdComment(openMenuIdComment === postId ? null : postId);
+  };
+
+  const handleDeleteClick = (postId: number) => {
+    setDeletePostId(postId);
+    setOpenMenuId(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletePostId || isDeletingPost) return;
+
+    setIsDeletingPost(true);
+
     try {
-      await axios.delete(`http://localhost:8080/api/posts/${postId}`, {
-        params: { userId },
-      });
-      setPosts(posts.filter((post) => post.id !== postId));
+      await axios.delete(`http://localhost:8080/api/posts/${deletePostId}`);
+      setPosts((prevPosts) =>
+        prevPosts.filter((post) => post.id !== deletePostId)
+      );
       setOpenMenuId(null);
+      setDeletePostId(null);
+      window.dispatchEvent(
+        new CustomEvent("profile-stats-refresh", {
+          detail: { userId: currentUserId },
+        })
+      );
     } catch (error) {
       console.error("Error deleting post:", error);
+    } finally {
+      setIsDeletingPost(false);
     }
   };
 
   const handleReport = (postId: number) => {
-    console.log(`Post ${postId} reported! by ${currentUserId}`);
+    setReportPostId(postId);
     setOpenMenuId(null);
+  };
+
+  const handleReportSubmit = (reason: string) => {
+    console.log(`Post ${reportPostId} reported by ${currentUserId}: ${reason}`);
+  };
+
+  const handleAddComment = async (postId: number) => {
+    const content = commentInputs[postId];
+
+    if (!content?.trim()) return;
+
+    try {
+      await axios.post(
+        `http://localhost:8080/api/comments/${postId}?userId=${currentUserId}`,
+        { content }
+      );
+
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                comments: [
+                  ...post.comments,
+                  {
+                    userID: currentUserId,
+                    username,
+                    content,
+                    userProfilePictureUrl,
+                  },
+                ],
+              }
+            : post
+        )
+      );
+
+      setCommentInputs((prev) => ({ ...prev, [postId]: "" }));
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
+  };
+
+  const handleLike = async (postId: number) => {
+    const post = posts.find((item) => item.id === postId);
+    if (!post) return;
+
+    const existingReaction = post.reactions.find(
+      (reaction) => reaction.userID === currentUserId || reaction.userId === currentUserId
+    );
+
+    try {
+      let updatedReactions = [...post.reactions];
+
+      if (existingReaction) {
+        updatedReactions = updatedReactions.filter(
+          (reaction) => reaction.id !== existingReaction.id
+        );
+
+        await axios.delete(
+          `http://localhost:8080/api/reactions/remove?reactionId=${existingReaction.id}`
+        );
+      } else {
+        updatedReactions = [
+          ...updatedReactions,
+          {
+            userID: currentUserId,
+            username,
+            type: "LIKE",
+            userProfilePictureUrl,
+          },
+        ];
+
+        await axios.post("http://localhost:8080/api/reactions/add", {
+          type: "LIKE",
+          userId: currentUserId,
+          postId,
+        });
+      }
+
+      setPosts((prevPosts) =>
+        prevPosts.map((item) =>
+          item.id === postId ? { ...item, reactions: updatedReactions } : item
+        )
+      );
+    } catch (error) {
+      console.error("Error updating like:", error);
+    }
   };
 
   return (
     <div className="all-posts-container">
       {posts.length === 0 ? (
-        <p>No posts available for this user.</p>
+        <p className="profile-empty-posts">No posts available for this user.</p>
       ) : (
-        posts.map((post, index) => (
-          <div key={index} className="container-post">
+        posts.map((post) => (
+          <div key={post.id} className="container-post">
             <div className="post-body">
               <div className="user-info-post">
                 <div className="user-post">
-                  <img src={logoImg} className="user-profile-pic-post" alt="" />
+                  <img
+                    src={post.userProfilePictureUrl || post.userProfilePic || logoImg}
+                    className="user-profile-pic-post"
+                    alt=""
+                  />
                   <h2 className="h2-post">{post.user}</h2>
                 </div>
                 <div className="relative">
@@ -121,7 +230,7 @@ const UserPosts: React.FC = () => {
                       {currentUserId === post.userId ? (
                         <button
                           className="buttonOptions"
-                          onClick={() => handleDelete(post.id, currentUserId)}
+                          onClick={() => handleDeleteClick(post.id)}
                         >
                           Delete
                         </button>
@@ -145,7 +254,6 @@ const UserPosts: React.FC = () => {
                     <FontAwesomeIcon icon={faEarth} className="fas fa-earth" />
                   </span>
                 </div>
-                {/* Tags Section */}
                 {post.tags && post.tags.length > 0 && (
                   <div className="tags-container">
                     {post.tags.map((tag, tagIndex) => (
@@ -161,7 +269,7 @@ const UserPosts: React.FC = () => {
               <div className="post-detail">
                 {post.mediaUrl && (
                   <div className="upload-img-container">
-                    <img src={naruto} className="upload-img" alt="" />
+                    <img src={post.mediaUrl} className="upload-img" alt="" />
                   </div>
                 )}
                 <div className="reaction-comment-preview">
@@ -192,20 +300,35 @@ const UserPosts: React.FC = () => {
                     >
                       {post.comments.length} comments{" "}
                     </span>
-                    <span>2.5k share </span>
                   </div>
                 </div>
                 <div className="reactions-comment-share-icons">
-                  <div className="reaction" tabIndex={1}>
+                  <div
+                    className="reaction"
+                    tabIndex={1}
+                    onClick={() => handleLike(post.id)}
+                  >
                     <span>
                       <FontAwesomeIcon
                         icon={faThumbsUp}
                         className="fas fa-thumbs-up"
                       />
                     </span>
-                    <i>Like</i>
+                    <i>
+                      {post.reactions.some(
+                        (reaction) =>
+                          (reaction.userID === currentUserId ||
+                            reaction.userId === currentUserId) &&
+                          reaction.type === "LIKE"
+                      )
+                        ? "Liked"
+                        : "Like"}
+                    </i>
                   </div>
-                  <div className="comment">
+                  <div
+                    className="comment"
+                    onClick={() => handleCommentClick(post.id)}
+                  >
                     <span>
                       <FontAwesomeIcon
                         icon={faCommentAlt}
@@ -214,17 +337,30 @@ const UserPosts: React.FC = () => {
                     </span>
                     <i>Comment</i>
                   </div>
-                  <div className="share">
-                    <span>
-                      <FontAwesomeIcon
-                        icon={faShare}
-                        className="fas fa-share"
-                      />
-                    </span>
-                    <i>Share</i>
-                  </div>
                 </div>
               </div>
+              {openMenuIdComment === post.id && (
+                <div className="comment-input-container">
+                  <input
+                    type="text"
+                    className="comment-input"
+                    placeholder="Write a comment..."
+                    value={commentInputs[post.id] || ""}
+                    onChange={(e) =>
+                      setCommentInputs({
+                        ...commentInputs,
+                        [post.id]: e.target.value,
+                      })
+                    }
+                  />
+                  <button
+                    className="comment-submit"
+                    onClick={() => handleAddComment(post.id)}
+                  >
+                    Comment
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ))
@@ -240,6 +376,21 @@ const UserPosts: React.FC = () => {
         <ReactionPopup
           reactions={currentPostReactions}
           onClose={() => setShowReactionPopup(false)}
+        />
+      )}
+
+      {reportPostId && (
+        <ReportPostModal
+          onClose={() => setReportPostId(null)}
+          onSubmit={handleReportSubmit}
+        />
+      )}
+
+      {deletePostId && (
+        <DeletePostModal
+          isDeleting={isDeletingPost}
+          onClose={() => setDeletePostId(null)}
+          onConfirm={handleDeleteConfirm}
         />
       )}
     </div>

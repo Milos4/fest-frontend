@@ -7,6 +7,15 @@ interface Comment {
   username: string;
   content: string;
   userID: number;
+  userProfilePictureUrl?: string;
+  profilePictureUrl?: string;
+  userProfilePic?: string;
+  profilePicture?: string;
+  user?: {
+    bio?: {
+      profilePictureUrl?: string;
+    };
+  };
 }
 
 interface CommentPopupProps {
@@ -21,26 +30,61 @@ const CommentPopup: React.FC<CommentPopupProps> = ({ comments, onClose }) => {
     navigate(`/profile/${userId}`);
     onClose();
   };
+
+  const getCommentProfileImage = (comment: Comment) =>
+    comment.userProfilePictureUrl ||
+    comment.profilePictureUrl ||
+    comment.userProfilePic ||
+    comment.profilePicture ||
+    comment.user?.bio?.profilePictureUrl ||
+    "";
+
   return (
-    <div className="comment-popup">
-      <div className="comment-popup-header">
-        <div className="comment-popup-header-text">Comments</div>
-        <button className="close-btn" onClick={onClose}>
-          <FontAwesomeIcon icon={faTimes} />
-        </button>
-      </div>
-      <div className="comment-list">
-        {comments.map((comment, index) => (
-          <div key={index} className="comment-item">
-            <strong
-              className="comment-username"
-              onClick={() => handleUsernameClick(comment.userID)}
-            >
-              {comment.username}
-            </strong>
-            <p> {comment.content}</p>
+    <div className="post-popup-overlay" onClick={onClose}>
+      <div className="post-popup-card" onClick={(e) => e.stopPropagation()}>
+        <div className="post-popup-header">
+          <div>
+            <h3>Comments</h3>
+            <p>{comments.length} comments on this post</p>
           </div>
-        ))}
+          <button className="post-popup-close" onClick={onClose}>
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
+
+        <div className="post-popup-list">
+          {comments.length > 0 ? (
+            comments.map((comment, index) => {
+              const profileImage = getCommentProfileImage(comment);
+
+              return (
+                <div key={index} className="comment-row">
+                  <button
+                    className="comment-avatar"
+                    onClick={() => handleUsernameClick(comment.userID)}
+                  >
+                    {profileImage ? (
+                      <img src={profileImage} alt={comment.username} />
+                    ) : (
+                      comment.username?.charAt(0)?.toUpperCase() || "U"
+                    )}
+                  </button>
+                <div className="comment-bubble">
+                  <button
+                    className="comment-username"
+                    onClick={() => handleUsernameClick(comment.userID)}
+                  >
+                    {comment.username}
+                  </button>
+                  <p>{comment.content}</p>
+                </div>
+              </div>
+              );
+            })
+          ) : (
+            <div className="post-popup-empty">No comments yet.</div>
+          )}
+        </div>
       </div>
     </div>
   );

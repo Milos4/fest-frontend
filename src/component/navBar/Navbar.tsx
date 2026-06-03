@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { IonIcon } from "@ionic/react";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import {
   homeOutline,
   personOutline,
@@ -12,6 +13,7 @@ import {
 import logoImg from "../../images/logo.png";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
+import { db } from "../../firebase";
 
 interface NavbarProps {
   activeIndex: number;
@@ -22,6 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeIndex, setActiveIndex }) => {
   const navigate = useNavigate();
 
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,6 +75,29 @@ const Navbar: React.FC<NavbarProps> = ({ activeIndex, setActiveIndex }) => {
     };
 
     fetchUnreadNotifications();
+  }, []);
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const userId = Number(userData.id);
+
+    if (!userId) return;
+
+    const chatsQuery = query(
+      collection(db, "chats"),
+      where("participants", "array-contains", userId)
+    );
+
+    const unsubscribe = onSnapshot(chatsQuery, (snapshot) => {
+      const nextUnreadCount = snapshot.docs.filter((chatDoc) => {
+        const chat = chatDoc.data();
+        return Boolean(chat.unreadBy?.[String(userId)]);
+      }).length;
+
+      setUnreadMessagesCount(nextUnreadCount);
+    });
+
+    return unsubscribe;
   }, []);
 
   const handleSearch = async () => {
@@ -187,6 +213,11 @@ const Navbar: React.FC<NavbarProps> = ({ activeIndex, setActiveIndex }) => {
             <a href="#">
               <span className="icon">
                 <IonIcon icon={chatboxOutline} />
+                {unreadMessagesCount > 0 && (
+                  <span className="notification-badge message-badge">
+                    {unreadMessagesCount}
+                  </span>
+                )}
               </span>
               <span className="text">Messages</span>
             </a>
