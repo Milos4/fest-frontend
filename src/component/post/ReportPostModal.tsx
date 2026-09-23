@@ -4,7 +4,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 interface ReportPostModalProps {
   onClose: () => void;
-  onSubmit: (reason: string) => void;
+  onSubmit: (reason: string) => Promise<void>;
 }
 
 const reportReasons = [
@@ -21,10 +21,20 @@ const ReportPostModal: React.FC<ReportPostModalProps> = ({
 }) => {
   const [selectedReason, setSelectedReason] = useState(reportReasons[0]);
   const [isReported, setIsReported] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = () => {
-    onSubmit(selectedReason);
-    setIsReported(true);
+  // Potvrdu prikazuje tek nakon uspjesnog cuvanja; greska dozvoljava ponovni pokusaj.
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setError("");
+    try {
+      await onSubmit(selectedReason);
+      setIsReported(true);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Report could not be saved");
+    } finally { setIsSubmitting(false); }
   };
 
   return (
@@ -65,11 +75,12 @@ const ReportPostModal: React.FC<ReportPostModalProps> = ({
             </div>
 
             <div className="report-actions">
+              {error && <p role="alert">{error}</p>}
               <button className="report-cancel" onClick={onClose}>
                 Cancel
               </button>
-              <button className="report-submit" onClick={handleSubmit}>
-                Report
+              <button className="report-submit" onClick={handleSubmit} disabled={isSubmitting}>
+                {isSubmitting ? "Sending…" : "Report"}
               </button>
             </div>
           </>

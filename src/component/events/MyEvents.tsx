@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import logoImg from "../../images/logo.png";
+import { DEFAULT_PROFILE_PICTURE_URL } from "../../utils/profilePicture";
 import EventDetailsModal from "./EventDetailsModal";
 import EventApplicantProfileModal from "./EventApplicantProfileModal";
 import { EventJoinRequest, UserEvent } from "./eventTypes";
@@ -208,7 +208,7 @@ const MyEvents: React.FC<MyEventsProps> = ({ currentUserId }) => {
                               disabled={!getApplicantId(request)}
                             >
                               <img
-                                src={applicant.profilePictureUrl || logoImg}
+                                src={applicant.profilePictureUrl || DEFAULT_PROFILE_PICTURE_URL}
                                 alt={applicant.username}
                               />
                             </button>

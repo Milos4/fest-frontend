@@ -74,10 +74,12 @@
 }
 
 .upload-img {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
   max-height: 420px; /* Maksimalna visina slike */
-  object-fit: cover;
+  object-fit: contain;
+  display: block;
   border-radius: 9px;
 }
 

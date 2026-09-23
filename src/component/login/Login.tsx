@@ -26,10 +26,10 @@ const Login: React.FC = () => {
       const userData = response.data;
       localStorage.setItem("userData", JSON.stringify(userData));
       markUserOnline(Number(userData.id) || null);
-      navigate("/home");
-      console.log(response.data);
+      // Uloga iz odgovora servera odredjuje pocetnu navigaciju.
+      navigate(userData.role?.name === "ADMIN" ? "/admin/users" : "/home", { replace: true });
     } catch (error) {
-      alert("Invalid username or password");
+      alert(axios.isAxiosError(error) ? error.response?.data?.message || "Invalid username or password" : "Login failed");
     }
   };
 
@@ -46,19 +46,19 @@ const Login: React.FC = () => {
     }
 
     try {
-      console.log(regUsername);
-      console.log(regEmail);
-      console.log(regPassword);
-      console.log(regConfirmPassword);
       const response = await axios.post("http://localhost:8080/api/register", {
         regUsername,
         regEmail,
         regPassword,
         regConfirmPassword,
       });
-      navigate("/home");
-      alert("Welcome");
-      console.log(response.data);
+      // Registracija ne pravi sesiju: nakon uspjeha korisnik se prijavljuje.
+      if (response.data.success) {
+        setUsername(regUsername);
+        document.querySelector(".wrapper")?.classList.add("animate-signUp");
+        document.querySelector(".wrapper")?.classList.remove("animate-signIn");
+        alert("Account created. Please sign in.");
+      }
     } catch (error) {
       alert("Registration failed");
     }

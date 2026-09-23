@@ -13,7 +13,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { db } from "../../firebase";
-import logoImg from "../../images/logo.png";
+import { DEFAULT_PROFILE_PICTURE_URL } from "../../utils/profilePicture";
 import { ChatMessage, ChatUser } from "./chatTypes";
 import PresenceStatus from "./PresenceStatus";
 import "./messages.css";
@@ -130,7 +130,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     <section className="chat-window">
       <div className="chat-window-header">
         <div className="chat-window-user">
-          <img src={otherUser.profilePictureUrl || logoImg} alt={otherUser.username} />
+          <img src={otherUser.profilePictureUrl || DEFAULT_PROFILE_PICTURE_URL} alt={otherUser.username} />
           <div>
             <strong>{otherUser.username}</strong>
             <PresenceStatus userId={otherUser.id} />

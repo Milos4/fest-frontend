@@ -2,6 +2,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { profilePictureOrDefault } from "../../utils/profilePicture";
 
 interface Comment {
   username: string;
@@ -32,12 +33,13 @@ const CommentPopup: React.FC<CommentPopupProps> = ({ comments, onClose }) => {
   };
 
   const getCommentProfileImage = (comment: Comment) =>
-    comment.userProfilePictureUrl ||
-    comment.profilePictureUrl ||
-    comment.userProfilePic ||
-    comment.profilePicture ||
-    comment.user?.bio?.profilePictureUrl ||
-    "";
+    profilePictureOrDefault(
+      comment.userProfilePictureUrl ||
+        comment.profilePictureUrl ||
+        comment.userProfilePic ||
+        comment.profilePicture ||
+        comment.user?.bio?.profilePictureUrl
+    );
 
   return (
     <div className="post-popup-overlay" onClick={onClose}>
@@ -63,11 +65,7 @@ const CommentPopup: React.FC<CommentPopupProps> = ({ comments, onClose }) => {
                     className="comment-avatar"
                     onClick={() => handleUsernameClick(comment.userID)}
                   >
-                    {profileImage ? (
-                      <img src={profileImage} alt={comment.username} />
-                    ) : (
-                      comment.username?.charAt(0)?.toUpperCase() || "U"
-                    )}
+                    <img src={profileImage} alt={comment.username} />
                   </button>
                 <div className="comment-bubble">
                   <button

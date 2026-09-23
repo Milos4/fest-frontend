@@ -11,6 +11,7 @@ import {
   searchOutline,
 } from "ionicons/icons";
 import logoImg from "../../images/logo.png";
+import { DEFAULT_PROFILE_PICTURE_URL } from "../../utils/profilePicture";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
@@ -31,7 +32,11 @@ const Navbar: React.FC<NavbarProps> = ({ activeIndex, setActiveIndex }) => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
-  const handleItemClick = (index: number) => {
+  const handleItemClick = (
+    event: React.MouseEvent<HTMLLIElement>,
+    index: number
+  ) => {
+    event.preventDefault();
     setActiveIndex(index);
 
     if (index === 3) {
@@ -102,10 +107,22 @@ const Navbar: React.FC<NavbarProps> = ({ activeIndex, setActiveIndex }) => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/users/search?q=${searchQuery}`
+      const currentUserId = Number(
+        JSON.parse(localStorage.getItem("userData") || "{}").id
       );
-      setSearchResults(response.data);
+      const response = await axios.get(
+        `http://localhost:8080/api/users/search?q=${encodeURIComponent(searchQuery)}`
+      );
+      // Dodatna UI zastita: ne prikazuj admina ni trenutno prijavljeni nalog.
+      setSearchResults(
+        Array.isArray(response.data)
+          ? response.data.filter(
+              (result: any) =>
+                result.role?.name !== "ADMIN" &&
+                Number(result.id) !== currentUserId
+            )
+          : []
+      );
     } catch (error) {
       console.error("Error fetching search results:", error);
     }
@@ -148,7 +165,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeIndex, setActiveIndex }) => {
                         {/* Display profile picture if available */}
                         {result.bio && (
                           <img
-                            src={result.bio.profilePictureUrl || logoImg}
+                            src={result.bio?.profilePictureUrl || DEFAULT_PROFILE_PICTURE_URL}
                             alt="Profile"
                             className="profile-picture"
                           />
@@ -186,7 +203,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeIndex, setActiveIndex }) => {
         <ul>
           <li
             className={`list ${activeIndex === 0 ? "active" : ""}`}
-            onClick={() => handleItemClick(0)}
+            onClick={(event) => handleItemClick(event, 0)}
           >
             <a href="#">
               <span className="icon">
@@ -197,7 +214,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeIndex, setActiveIndex }) => {
           </li>
           <li
             className={`list ${activeIndex === 1 ? "active" : ""}`}
-            onClick={() => handleItemClick(1)}
+            onClick={(event) => handleItemClick(event, 1)}
           >
             <a href="#">
               <span className="icon">
@@ -208,7 +225,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeIndex, setActiveIndex }) => {
           </li>
           <li
             className={`list ${activeIndex === 2 ? "active" : ""}`}
-            onClick={() => handleItemClick(2)}
+            onClick={(event) => handleItemClick(event, 2)}
           >
             <a href="#">
               <span className="icon">
@@ -224,7 +241,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeIndex, setActiveIndex }) => {
           </li>
           <li
             className={`list ${activeIndex === 3 ? "active" : ""}`}
-            onClick={() => handleItemClick(3)}
+            onClick={(event) => handleItemClick(event, 3)}
           >
             <a href="#">
               <span className="icon">
@@ -238,7 +255,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeIndex, setActiveIndex }) => {
           </li>
           <li
             className={`list ${activeIndex === 4 ? "active" : ""}`}
-            onClick={() => handleItemClick(4)}
+            onClick={(event) => handleItemClick(event, 4)}
           >
             <a href="#">
               <span className="icon">

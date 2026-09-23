@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { logout } from "../../api";
 import "./settings.css";
 
 type SettingsView = "change-password" | "privacy" | "help" | "delete-account";
@@ -9,9 +9,8 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({ onSelectView }) => {
-  const navigate = useNavigate();
-
-  const handleOptionClick = (option: string) => {
+  /** Sve odjave gase serversku sesiju prije povratka na login. */
+  const handleOptionClick = async (option: string) => {
     console.log(`Clicked on option: ${option}`);
 
     if (option === "Change Password") {
@@ -35,8 +34,8 @@ const Settings: React.FC<SettingsProps> = ({ onSelectView }) => {
     }
 
     if (option === "Logout") {
-      localStorage.clear();
-      navigate("/");
+      try { await logout(); }
+      catch { alert("Logout failed. Please try again."); }
     }
   };
 

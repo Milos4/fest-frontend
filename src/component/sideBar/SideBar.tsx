@@ -12,7 +12,7 @@ import {
 
 import "./styleSideBar.css";
 
-import userImg from "../../images/user.png";
+import { DEFAULT_PROFILE_PICTURE_URL } from "../../utils/profilePicture";
 import { HomeView } from "../events/eventTypes";
 
 interface SideBarProps {
@@ -107,10 +107,10 @@ const SideBar: React.FC<SideBarProps> = ({
     };
   }, [userId]);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    sessionStorage.clear();
-    window.location.href = "/";
+  // Odjava mora ukinuti i serversku sesiju, ne samo lokalne podatke.
+  const handleLogout = async () => {
+    try { await (await import("../../api")).logout(); }
+    catch { alert("Logout failed. Please try again."); }
   };
 
   const handleHomeViewClick = (view: HomeView) => {
@@ -163,7 +163,7 @@ const SideBar: React.FC<SideBarProps> = ({
         <div className="sidebar-main">
           <div className="user">
             <img
-              src={profilePictureUrl || userImg}
+              src={profilePictureUrl || DEFAULT_PROFILE_PICTURE_URL}
               className="user-img"
               alt="User"
             />

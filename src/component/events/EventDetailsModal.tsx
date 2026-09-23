@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faTimes, faUsers } from "@fortawesome/free-solid-svg-icons";
-import logoImg from "../../images/logo.png";
+import { DEFAULT_PROFILE_PICTURE_URL } from "../../utils/profilePicture";
 import { EventAttendee, EventAttendeeProfile, UserEvent } from "./eventTypes";
 import EventApplicantProfileModal from "./EventApplicantProfileModal";
 
@@ -189,7 +189,7 @@ const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                           disabled={!attendeeProfile.id}
                         >
                           <img
-                            src={attendeeProfile.profilePictureUrl || logoImg}
+                            src={attendeeProfile.profilePictureUrl || DEFAULT_PROFILE_PICTURE_URL}
                             alt={attendeeProfile.username}
                           />
                           <div>

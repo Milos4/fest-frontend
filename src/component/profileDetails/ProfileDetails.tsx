@@ -6,6 +6,7 @@ import {
   lockClosedOutline,
   mailOutline,
 } from "ionicons/icons";
+import { profilePictureOrDefault } from "../../utils/profilePicture";
 
 interface ProfileDetailsProps {
   userData: any;
@@ -50,7 +51,7 @@ const ProfileDetails: React.FC<ProfileDetailsProps> = ({
         <div className="profile-lines"></div>
         <div className="profile-imgBx">
           <img
-            src={userData.bio?.profilePictureUrl || ""}
+            src={profilePictureOrDefault(userData.bio?.profilePictureUrl)}
             alt="Profile"
             className="profileD-picture"
           />
@@ -66,20 +67,22 @@ const ProfileDetails: React.FC<ProfileDetailsProps> = ({
               </span>
             </h2>
 
-            <div
-              className={`profile-privacy-status ${
-                isPrivateProfile ? "private" : "public"
-              }`}
-            >
-              <IonIcon
-                icon={isPrivateProfile ? lockClosedOutline : globeOutline}
-              />
-              <span>
-                {isPrivateProfile ? "Private profile" : "Public profile"}
-              </span>
-            </div>
+            {!isFollowing && (
+              <div
+                className={`profile-privacy-status ${
+                  isPrivateProfile ? "private" : "public"
+                }`}
+              >
+                <IonIcon
+                  icon={isPrivateProfile ? lockClosedOutline : globeOutline}
+                />
+                <span>
+                  {isPrivateProfile ? "Private profile" : "Public profile"}
+                </span>
+              </div>
+            )}
 
-            {canViewProfile ? (
+            {canViewProfile && (
               <div className="profile-data">
                 <h3 className="profile-h3">
                   {postCount}
@@ -96,10 +99,6 @@ const ProfileDetails: React.FC<ProfileDetailsProps> = ({
                   <br />
                   <span>Following</span>
                 </h3>
-              </div>
-            ) : (
-              <div className="profile-private-inline">
-                This account is private
               </div>
             )}
 

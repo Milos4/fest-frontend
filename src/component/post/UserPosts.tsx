@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./postlist.css";
-import logoImg from "../../images/logo.png";
+import { DEFAULT_PROFILE_PICTURE_URL } from "../../utils/profilePicture";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart,
@@ -12,6 +12,7 @@ import { faCommentAlt, faThumbsUp } from "@fortawesome/free-regular-svg-icons";
 import ReactionPopup from "../reaction/ReactionPopup";
 import CommentPopup from "../comment/CommentPopup";
 import ReportPostModal from "./ReportPostModal";
+import { reportPost } from "../../api";
 import DeletePostModal from "./DeletePostModal";
 
 interface Post {
@@ -108,8 +109,10 @@ const UserPosts: React.FC<UserPostsProps> = ({ posts, setPosts }) => {
     setOpenMenuId(null);
   };
 
-  const handleReportSubmit = (reason: string) => {
-    console.log(`Post ${reportPostId} reported by ${currentUserId}: ${reason}`);
+  // Profil i pocetna stranica koriste isti endpoint za cuvanje prijave.
+  const handleReportSubmit = async (reason: string) => {
+    if (!reportPostId) throw new Error("Select a post first");
+    await reportPost(reportPostId, reason);
   };
 
   const handleAddComment = async (postId: number) => {
@@ -206,7 +209,7 @@ const UserPosts: React.FC<UserPostsProps> = ({ posts, setPosts }) => {
               <div className="user-info-post">
                 <div className="user-post">
                   <img
-                    src={post.userProfilePictureUrl || post.userProfilePic || logoImg}
+                    src={post.userProfilePictureUrl || post.userProfilePic || DEFAULT_PROFILE_PICTURE_URL}
                     className="user-profile-pic-post"
                     alt=""
                   />

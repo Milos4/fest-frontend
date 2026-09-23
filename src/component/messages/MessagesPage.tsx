@@ -14,7 +14,7 @@ import {
   faMessage,
 } from "@fortawesome/free-solid-svg-icons";
 import { db } from "../../firebase";
-import logoImg from "../../images/logo.png";
+import { DEFAULT_PROFILE_PICTURE_URL } from "../../utils/profilePicture";
 import ChatWindow from "./ChatWindow";
 import { ChatSummary, ChatUser } from "./chatTypes";
 import PresenceStatus from "./PresenceStatus";
@@ -201,7 +201,7 @@ const MessagesPage: React.FC<MessagesPageProps> = ({
                   className={`message-row ${isUnreadChat(chat) ? "unread" : ""}`}
                 >
                   <img
-                    src={otherUser.profilePictureUrl || logoImg}
+                    src={otherUser.profilePictureUrl || DEFAULT_PROFILE_PICTURE_URL}
                     alt={otherUser.username}
                   />
                   <button

@@ -2,7 +2,9 @@ import React from "react";
 import LoginPage from "./page/LoginPage";
 import HomePage from "./page/HomePage";
 import ProfilePage from "./page/ProfilePage";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
+import RequireSession from "./RequireSession";
+import AdminPage from "./page/AdminPage";
 import { useCurrentUserPresence } from "./component/messages/presence";
 
 const PresenceBoot: React.FC = () => {
@@ -15,11 +17,13 @@ const PresenceBoot: React.FC = () => {
 const App: React.FC = () => {
   return (
     <Router>
-      <PresenceBoot />
       <Routes>
-        <Route path="/" element={<LoginPage />}></Route>
-        <Route path="/home" element={<HomePage />}></Route>
-        <Route path="/profile/:userId" element={<ProfilePage />} />
+        <Route path="/" element={<RequireSession guest><LoginPage /></RequireSession>} />
+        <Route path="/login" element={<RequireSession guest><LoginPage /></RequireSession>} />
+        <Route path="/home" element={<RequireSession><PresenceBoot /><HomePage /></RequireSession>} />
+        <Route path="/profile/:userId" element={<RequireSession><PresenceBoot /><ProfilePage /></RequireSession>} />
+        <Route path="/admin/*" element={<RequireSession admin><AdminPage /></RequireSession>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

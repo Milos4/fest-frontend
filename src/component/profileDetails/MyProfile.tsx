@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { collection, getDocs, query, updateDoc, where } from "firebase/firestore";
-import logoImg from "../../images/logo.png";
+import { DEFAULT_PROFILE_PICTURE_URL } from "../../utils/profilePicture";
 import "./myProfile.css";
 import { IonIcon } from "@ionic/react";
 import {
@@ -281,7 +281,7 @@ const MyProfile: React.FC = () => {
 
   const interests = profile?.bio?.interests || [];
   const profileImagePreview =
-    editForm.profilePictureUrl || profile?.bio?.profilePictureUrl || logoImg;
+    editForm.profilePictureUrl || profile?.bio?.profilePictureUrl || DEFAULT_PROFILE_PICTURE_URL;
   const isPrivate = Boolean(profile?.bio?.privateProfile);
 
   if (loading) return <div>Loading...</div>;
@@ -301,7 +301,7 @@ const MyProfile: React.FC = () => {
           <div className="myprofile-header">
             <div className="myprofile-picture-container">
               <img
-                src={profile?.bio?.profilePictureUrl || logoImg}
+                src={profile?.bio?.profilePictureUrl || DEFAULT_PROFILE_PICTURE_URL}
                 alt="Profile"
                 className="myprofile-picture"
               />

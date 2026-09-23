@@ -6,7 +6,7 @@ import {
   faMagnifyingGlass,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import logoImg from "../../images/logo.png";
+import { DEFAULT_PROFILE_PICTURE_URL } from "../../utils/profilePicture";
 import ChatWindow from "./ChatWindow";
 import { ChatUser } from "./chatTypes";
 import PresenceStatus from "./PresenceStatus";
@@ -122,7 +122,7 @@ const FloatingChat: React.FC<FloatingChatProps> = ({
                   className="floating-chat-user"
                   onClick={() => setActiveChatUser(user)}
                 >
-                  <img src={user.profilePictureUrl || logoImg} alt={user.username} />
+                  <img src={user.profilePictureUrl || DEFAULT_PROFILE_PICTURE_URL} alt={user.username} />
                   <span>
                     <strong>{user.username}</strong>
                     {(user.firstName || user.lastName) && (

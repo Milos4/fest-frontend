@@ -15,7 +15,9 @@
   min-height: 50vh;
   background: #fff;
   margin-bottom: -120px;
-  transition: min-height 0.5s ease, margin-bottom 0.5s ease;
+  transition:
+    min-height 0.5s ease,
+    margin-bottom 0.5s ease;
 }
 
 .profile-card {
@@ -161,6 +163,8 @@
 }
 
 .profile-card .profile-content .profile-detials .profile-h2 {
+  position: relative;
+  top: 4px;
   font-size: 1.25em;
   font-weight: 600;
   color: grey;
@@ -207,7 +211,7 @@
   border: none;
   outline: none;
   border-radius: 5px;
-  font-size: 1em;
+  font-size: 0.8em;
   font-weight: 500;
   background-color: rgb(150, 150, 150);
   color: #fff;
@@ -215,6 +219,8 @@
 }
 
 .profile-privacy-status {
+  position: relative;
+  top: -4px;
   display: inline-flex;
   align-items: center;
   gap: 6px;

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { profilePictureOrDefault } from "../../utils/profilePicture";
 
 import {
   faHeart,
@@ -194,11 +195,10 @@ const ReactionPopup: React.FC<ReactionPopupProps> = ({
                 onClick={() => handleUsernameClick(user.userId)}
               >
                 <span className="reaction-user-avatar">
-                  {user.profileImage ? (
-                    <img src={user.profileImage} alt={user.username} />
-                  ) : (
-                    user.username?.charAt(0)?.toUpperCase() || "U"
-                  )}
+                  <img
+                    src={profilePictureOrDefault(user.profileImage)}
+                    alt={user.username}
+                  />
                 </span>
                 <span className="reaction-user-name">{user.username}</span>
                 <span className="reaction-user-type">

@@ -327,7 +327,6 @@ const ProfilePage: React.FC = () => {
           </>
         ) : (
           <div className="profile-private-panel">
-            <h3>This account is private</h3>
             <p>
               {followStatus.hasPendingRequest
                 ? "Your follow request is pending."

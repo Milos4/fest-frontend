@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import logoImg from "../../images/logo.png";
+import { DEFAULT_PROFILE_PICTURE_URL } from "../../utils/profilePicture";
 import { getInstagramDisplayName } from "../../utils/instagram";
 
 interface EventApplicantProfileModalProps {
@@ -61,7 +61,7 @@ const EventApplicantProfileModal: React.FC<EventApplicantProfileModalProps> = ({
           <button className="event-icon-button" onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} />
           </button>
-          <img src={bio.profilePictureUrl || logoImg} alt={profile?.username} />
+          <img src={bio.profilePictureUrl || DEFAULT_PROFILE_PICTURE_URL} alt={profile?.username} />
           <h3>{profile?.username || fallbackUsername || "Profile"}</h3>
           <p>
             {[bio.firstName, bio.lastName].filter(Boolean).join(" ") ||
